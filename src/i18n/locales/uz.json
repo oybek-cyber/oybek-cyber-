@@ -1,0 +1,43 @@
+{
+  "nav": {
+    "home": "Bosh sahifa",
+    "courses": "Kurslar",
+    "terminal": "Terminal",
+    "news": "Yangiliklar",
+    "admin": "Admin"
+  },
+  "hero": {
+    "title": "Kiberxavfsizlik Mutaxassisini Tayorlang",
+    "subtitle": "Cisco, Windows Server, Linux va Etik Hacking'ni o'rganing. AI-powered terminal bilan real vaqtda yozingiz.",
+    "cta": "Darslarni Boshlang"
+  },
+  "courses": {
+    "cisco": "Cisco CCNA",
+    "windows": "Windows Server 2022",
+    "linux": "Linux Mastery",
+    "hacking": "Etik Hacking",
+    "viewCourse": "Kursni Ko'ring",
+    "lessons": "Darslar",
+    "beginner": "Boshlang'ich"
+  },
+  "terminal": {
+    "title": "AI-Powered Cyber Terminal",
+    "subtitle": "Bash, PowerShell va Python buyruqlari uchun AI yordami",
+    "placeholder": "Savolingizni yozing...",
+    "send": "Yuborish",
+    "output": "Natija"
+  },
+  "news": {
+    "title": "Eng So'nggi Kiberxavfsizlik Yangiliklari",
+    "latestThreats": "So'nggi Tahdidlar"
+  },
+  "auth": {
+    "login": "Kirish",
+    "signup": "Ro'yxatdan O'tish",
+    "email": "Email",
+    "password": "Parol",
+    "loginWithGoogle": "Google orqali kirish",
+    "signupWithGoogle": "Google orqali ro'yxatdan o'tish"
+  },
+  "language": "Til"
+}

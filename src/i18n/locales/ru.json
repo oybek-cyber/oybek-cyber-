@@ -1,0 +1,43 @@
+{
+  "nav": {
+    "home": "Главная",
+    "courses": "Курсы",
+    "terminal": "Терминал",
+    "news": "Новости",
+    "admin": "Админ"
+  },
+  "hero": {
+    "title": "Станьте специалистом по кибербезопасности",
+    "subtitle": "Изучайте Cisco, Windows Server, Linux и этичный хакинг. Пишите код в реальном времени с помощью AI-терминала.",
+    "cta": "Начать обучение"
+  },
+  "courses": {
+    "cisco": "Cisco CCNA",
+    "windows": "Windows Server 2022",
+    "linux": "Linux Mastery",
+    "hacking": "Этичный хакинг",
+    "viewCourse": "Смотреть курс",
+    "lessons": "Уроки",
+    "beginner": "Начинающий"
+  },
+  "terminal": {
+    "title": "AI-Powered Cyber Terminal",
+    "subtitle": "AI помощь для команд Bash, PowerShell и Python",
+    "placeholder": "Введите ваш вопрос...",
+    "send": "Отправить",
+    "output": "Результат"
+  },
+  "news": {
+    "title": "Последние новости кибербезопасности",
+    "latestThreats": "Последние угрозы"
+  },
+  "auth": {
+    "login": "Вход",
+    "signup": "Регистрация",
+    "email": "Email",
+    "password": "Пароль",
+    "loginWithGoogle": "Вход через Google",
+    "signupWithGoogle": "Регистрация через Google"
+  },
+  "language": "Язык"
+}

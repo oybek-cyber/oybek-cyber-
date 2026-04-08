@@ -1,0 +1,23 @@
+{
+  "name": "cyber-lms",
+  "version": "1.0.0",
+  "description": "Professional Cybersecurity Learning Management System",
+  "author": "CyberLMS Team",
+  "license": "PROPRIETARY",
+  "keywords": [
+    "cybersecurity",
+    "learning-management-system",
+    "education",
+    "cisco",
+    "linux",
+    "windows-server",
+    "ethical-hacking",
+    "ai-terminal",
+    "react",
+    "tailwind"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/cyber-lms"
+  }
+}

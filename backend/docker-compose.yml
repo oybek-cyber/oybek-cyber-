@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: cybersecurity_lms_db
+    environment:
+      POSTGRES_DB: cybersecurity_lms
+      POSTGRES_USER: lms_user
+      POSTGRES_PASSWORD: secure_password_change_me
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lms_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cybersecurity_lms_api
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://lms_user:secure_password_change_me@postgres:5432/cybersecurity_lms
+      PORT: 5000
+      JWT_SECRET: your_super_secret_jwt_key_here_min_32_chars
+      JWT_REFRESH_SECRET: your_super_secret_refresh_key_here_min_32_chars
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  default:
+    name: cybersecurity_lms_network

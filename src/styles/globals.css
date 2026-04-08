@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  @apply transition-colors duration-300;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-cyber-black text-white font-inter;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  @apply w-2 h-2;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-cyber-black;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-cyber-blue/30 rounded hover:bg-cyber-blue/60;
+}
+
+/* Selection */
+::selection {
+  @apply bg-cyber-blue text-white;
+}
+
+/* Custom Animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Glassmorphism */
+.glassmorphism {
+  @apply bg-white/10 backdrop-blur-md border border-white/20;
+}
+
+/* Gradient Text */
+.gradient-text {
+  @apply bg-gradient-to-r from-cyber-blue to-cyber-electric bg-clip-text text-transparent;
+}
+
+/* Neon Glow */
+.neon-glow {
+  @apply shadow-lg shadow-cyber-blue/50;
+}
+
+/* Focus Styles */
+input:focus,
+button:focus,
+textarea:focus {
+  @apply outline-none ring-2 ring-cyber-blue ring-offset-2 ring-offset-cyber-black;
+}

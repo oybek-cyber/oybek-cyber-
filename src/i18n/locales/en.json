@@ -1,0 +1,43 @@
+{
+  "nav": {
+    "home": "Home",
+    "courses": "Courses",
+    "terminal": "Terminal",
+    "news": "News",
+    "admin": "Admin"
+  },
+  "hero": {
+    "title": "Become a Cybersecurity Expert",
+    "subtitle": "Master Cisco, Windows Server, Linux, and Ethical Hacking. Code in real-time with AI-powered terminal.",
+    "cta": "Start Learning"
+  },
+  "courses": {
+    "cisco": "Cisco CCNA",
+    "windows": "Windows Server 2022",
+    "linux": "Linux Mastery",
+    "hacking": "Ethical Hacking",
+    "viewCourse": "View Course",
+    "lessons": "Lessons",
+    "beginner": "Beginner"
+  },
+  "terminal": {
+    "title": "AI-Powered Cyber Terminal",
+    "subtitle": "AI assistance for Bash, PowerShell, and Python commands",
+    "placeholder": "Ask your question...",
+    "send": "Send",
+    "output": "Output"
+  },
+  "news": {
+    "title": "Latest Cybersecurity News",
+    "latestThreats": "Latest Threats"
+  },
+  "auth": {
+    "login": "Login",
+    "signup": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "loginWithGoogle": "Login with Google",
+    "signupWithGoogle": "Sign up with Google"
+  },
+  "language": "Language"
+}
