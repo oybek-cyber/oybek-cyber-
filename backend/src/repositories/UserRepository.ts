@@ -45,12 +45,12 @@ export class UserRepository {
     lastName?: string;
     googleId?: string;
     googleEmail?: string;
-    role?: Role;
+    role?: string;
   }) {
     return prisma.user.create({
       data: {
         ...data,
-        role: data.role || Role.STUDENT,
+        role: data.role || 'STUDENT',
       },
     });
   }

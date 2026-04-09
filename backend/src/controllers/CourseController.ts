@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { AuthenticatedRequest, ApiResponse } from '@types/index.js';
+import { AuthenticatedRequest, ApiResponse } from '@app-types/index.js';
 import { CourseService } from '@services/CourseService.js';
 import { createCourseSchema, updateCourseSchema, paginationSchema, validateData } from '@validators/schemas.js';
 import { AuthMiddleware } from '@middleware/auth.js';

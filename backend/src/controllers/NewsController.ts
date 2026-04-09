@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { AuthenticatedRequest, ApiResponse } from '@types/index.js';
+import { AuthenticatedRequest, ApiResponse } from '@app-types/index.js';
 import { NewsService } from '@services/NewsService.js';
 import logger from '@config/logger.js';
 

@@ -2,10 +2,8 @@ import { UserRepository } from '@repositories/UserRepository.js';
 import { JWTService } from '@utils/jwt.js';
 import { PasswordService } from '@utils/password.js';
 import { AppErrorHandler } from '@utils/errors.js';
-import { TokenPair, AuthPayload } from '@types/index.js';
+import { TokenPair, AuthPayload } from '@app-types/index.js';
 import logger from '@config/logger.js';
-
-type Role = 'ADMIN' | 'INSTRUCTOR' | 'STUDENT';
 
 export class AuthService {
   static async register(data: {
@@ -42,7 +40,7 @@ export class AuthService {
       password: hashedPassword,
       firstName: data.firstName,
       lastName: data.lastName,
-      role: Role.STUDENT,
+      role: 'STUDENT',
     });
 
     logger.info(`New user registered: ${user.id} (${user.email})`);
@@ -165,7 +163,7 @@ export class AuthService {
           googleEmail: email,
           firstName: profile.displayName?.split(' ')[0],
           lastName: profile.displayName?.split(' ').slice(1).join(' '),
-          role: Role.STUDENT,
+          role: 'STUDENT',
         });
 
         logger.info(`New user created via Google OAuth: ${user.id}`);
@@ -209,13 +207,13 @@ export class AuthService {
     userId: string,
     email: string,
     username: string,
-    role: Role
+    role: string
   ): TokenPair {
     const payload: Omit<AuthPayload, 'iat' | 'exp'> = {
       id: userId,
       email,
       username,
-      role: role.toString(),
+      role: role,
     };
 
     return JWTService.generateTokenPair(payload);

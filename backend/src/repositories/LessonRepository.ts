@@ -9,7 +9,7 @@ export class LessonRepository {
         quiz: {
           include: {
             questions: {
-              orderBy: { order: 'asc' },
+              orderBy: { createdAt: 'asc' },
             },
           },
         },
@@ -37,7 +37,7 @@ export class LessonRepository {
         quiz: {
           include: {
             questions: {
-              orderBy: { order: 'asc' },
+              orderBy: { createdAt: 'asc' },
             },
           },
         },
@@ -52,6 +52,7 @@ export class LessonRepository {
       include: {
         resources: true,
         quiz: true,
+        progress: true,
       },
     });
   }
@@ -85,13 +86,13 @@ export class LessonRepository {
         },
       },
       update: {
-        isCompleted: true,
+        completed: true,
         completedAt: new Date(),
       },
       create: {
         userId,
         lessonId,
-        isCompleted: true,
+        completed: true,
         completedAt: new Date(),
       },
     });

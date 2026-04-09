@@ -1,4 +1,4 @@
-import { AppError } from '@types/index.js';
+import { AppError } from '@app-types/index.js';
 
 export class AppErrorHandler {
   static unauthorized(message: string = 'Unauthorized'): AppError {

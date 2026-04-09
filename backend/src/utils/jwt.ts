@@ -1,17 +1,17 @@
 import jwt from 'jsonwebtoken';
 import { env } from '@config/env.js';
-import { AuthPayload, TokenPair } from '@types/index.js';
+import { AuthPayload, TokenPair } from '@app-types/index.js';
 
 export class JWTService {
   static generateAccessToken(payload: Omit<AuthPayload, 'iat' | 'exp'>): string {
     return jwt.sign(payload, env.JWT_SECRET, {
-      expiresIn: env.JWT_EXPIRY,
+      expiresIn: env.JWT_EXPIRY as any,
     });
   }
 
   static generateRefreshToken(userId: string): string {
     return jwt.sign({ id: userId }, env.JWT_REFRESH_SECRET, {
-      expiresIn: env.JWT_REFRESH_EXPIRY,
+      expiresIn: env.JWT_REFRESH_EXPIRY as any,
     });
   }
 

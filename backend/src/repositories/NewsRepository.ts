@@ -59,7 +59,6 @@ export class NewsRepository {
   static async createMany(data: any[]) {
     return prisma.newsArticle.createMany({
       data,
-      skipDuplicates: true,
     });
   }
 

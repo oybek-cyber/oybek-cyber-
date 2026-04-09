@@ -34,7 +34,7 @@ export const NewsTickerWidget: React.FC = () => {
     },
   ]
 
-  const severityColors = {
+  const severityColors: Record<string, string> = {
     critical: 'text-red-500',
     high: 'text-orange-500',
     medium: 'text-yellow-500',

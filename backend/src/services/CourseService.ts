@@ -2,13 +2,12 @@ import { CourseRepository } from '@repositories/CourseRepository.js';
 import { LessonRepository } from '@repositories/LessonRepository.js';
 import { AppErrorHandler } from '@utils/errors.js';
 import logger from '@config/logger.js';
-import { CourseCategory, CourseLevel } from '@prisma/client';
 
 export class CourseService {
   static async getAllCourses(
     filter?: {
-      category?: CourseCategory;
-      level?: CourseLevel;
+      category?: string;
+      level?: string;
       isPublished?: boolean;
     },
     page: number = 1,
@@ -166,7 +165,7 @@ export class CourseService {
 
       const lessons = await LessonRepository.findByCourse(courseId);
       const completedLessons = lessons.filter((lesson) =>
-        lesson.progress.some((p) => p.userId === userId && p.isCompleted)
+        lesson.progress.some((p: any) => p.userId === userId && p.completed)
       );
 
       const progress = (completedLessons.length / lessons.length) * 100 || 0;

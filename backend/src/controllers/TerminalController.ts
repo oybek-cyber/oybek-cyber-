@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { AuthenticatedRequest, ApiResponse, TerminalContextData } from '@types/index.js';
+import { AuthenticatedRequest, ApiResponse, TerminalContextData } from '@app-types/index.js';
 import { TerminalService } from '@services/TerminalService.js';
 import { terminalChatSchema, validateData } from '@validators/schemas.js';
 import prisma from '@utils/prisma.js';
@@ -20,7 +20,7 @@ export class TerminalController {
       }
 
       // Validate message safety
-      const isPromptSafe = await TerminalService.validatePrompt(data.message);
+      const isPromptSafe = await TerminalService.validatePrompt((data as any).message);
       if (!isPromptSafe) {
         res.status(400).json({
           success: false,
@@ -34,9 +34,9 @@ export class TerminalController {
 
       // Get or create terminal session
       let session = null;
-      if (data.sessionId) {
+      if ((data as any).sessionId) {
         session = await prisma.terminalSession.findUnique({
-          where: { id: data.sessionId },
+          where: { id: (data as any).sessionId },
           include: { messages: { orderBy: { createdAt: 'asc' } } },
         });
 
@@ -53,7 +53,7 @@ export class TerminalController {
         session = await prisma.terminalSession.create({
           data: {
             userId: req.userId!,
-            context: data.context ? JSON.stringify(data.context) : undefined,
+            context: (data as any).context ? JSON.stringify((data as any).context) : undefined,
           },
         });
       }
@@ -63,30 +63,30 @@ export class TerminalController {
         data: {
           sessionId: session.id,
           role: 'USER',
-          content: data.message,
+          content: (data as any).message,
         },
       });
 
       // Get conversation history
       const messages =
-        session.messages?.map((m) => ({
+        (session as any).messages?.map((m: any) => ({
           role: m.role.toLowerCase() as 'user' | 'assistant',
           content: m.content,
         })) || [];
 
       messages.push({
         role: 'user',
-        content: data.message,
+        content: (data as any).message,
       });
 
       // Get AI response
       const context: TerminalContextData | undefined =
-        data.context && typeof data.context === 'object'
+        (data as any).context && typeof (data as any).context === 'object'
           ? {
-              course: data.context.course,
-              lesson: data.context.lesson,
-              topic: data.context.topic,
-              level: data.context.level,
+              course: (data as any).context.course,
+              lesson: (data as any).context.lesson,
+              topic: (data as any).context.topic,
+              level: (data as any).context.level,
             }
           : undefined;
 

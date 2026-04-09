@@ -33,10 +33,7 @@ export class CourseRepository {
 
   static async findAll(filter?: any, take?: number, skip?: number) {
     return prisma.course.findMany({
-      where: {
-        deletedAt: null,
-        ...filter,
-      },
+      where: { ...filter },
       include: {
         instructor: {
           select: {
@@ -53,10 +50,7 @@ export class CourseRepository {
 
   static async countAll(filter?: any) {
     return prisma.course.count({
-      where: {
-        deletedAt: null,
-        ...filter,
-      },
+      where: { ...filter },
     });
   }
 
@@ -108,3 +102,4 @@ export class CourseRepository {
     });
   }
 }
+

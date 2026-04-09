@@ -5,6 +5,16 @@ import { JwtPayload } from 'jsonwebtoken';
 // EXTENDED EXPRESS REQUEST
 // ============================================
 
+declare global {
+  namespace Express {
+    interface Request {
+      user?: AuthPayload;
+      userId?: string;
+      role?: string;
+    }
+  }
+}
+
 export interface AuthenticatedRequest extends Request {
   user?: AuthPayload;
   userId?: string;

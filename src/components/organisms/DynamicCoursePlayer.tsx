@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { ChevronRight, Play } from 'lucide-react'
-import { Course, Lesson } from '@types/index'
+import { Course, Lesson } from '@app-types/index'
 
 interface DynamicCoursePlayerProps {
   course: Course

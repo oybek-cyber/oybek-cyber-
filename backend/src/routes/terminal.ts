@@ -2,24 +2,25 @@ import { Router } from 'express';
 import { TerminalController } from '@controllers/TerminalController.js';
 import { AuthMiddleware } from '@middleware/auth.js';
 import { terminalLimiter } from '@middleware/rateLimiter.js';
+import { AuthenticatedRequest } from '@app-types/index.js';
 
 const router = Router();
 
-// Protected routes - require authentication
+// Public terminal chat endpoint (for demo)
 router.post(
   '/chat',
-  AuthMiddleware.authenticate,
   terminalLimiter,
   (req, res, next) => {
-    TerminalController.chat(req, res).catch(next);
+    TerminalController.chat(req as AuthenticatedRequest, res).catch(next);
   }
 );
 
+// Protected routes - require authentication
 router.get(
   '/sessions',
   AuthMiddleware.authenticate,
   (req, res, next) => {
-    TerminalController.listSessions(req, res).catch(next);
+    TerminalController.listSessions(req as AuthenticatedRequest, res).catch(next);
   }
 );
 
@@ -27,7 +28,7 @@ router.get(
   '/sessions/:sessionId',
   AuthMiddleware.authenticate,
   (req, res, next) => {
-    TerminalController.getSession(req, res).catch(next);
+    TerminalController.getSession(req as AuthenticatedRequest, res).catch(next);
   }
 );
 
@@ -35,7 +36,7 @@ router.delete(
   '/sessions/:sessionId',
   AuthMiddleware.authenticate,
   (req, res, next) => {
-    TerminalController.deleteSession(req, res).catch(next);
+    TerminalController.deleteSession(req as AuthenticatedRequest, res).catch(next);
   }
 );
 

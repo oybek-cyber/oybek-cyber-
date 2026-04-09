@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { AuthenticatedRequest, ApiResponse } from '@types/index.js';
+import { AuthenticatedRequest, ApiResponse } from '@app-types/index.js';
 import { AuthService } from '@services/AuthService.js';
 import { loginSchema, registerSchema, refreshTokenSchema, validateData } from '@validators/schemas.js';
 import logger from '@config/logger.js';
@@ -18,7 +18,7 @@ export class AuthController {
         return;
       }
 
-      const result = await AuthService.register(data);
+      const result = await AuthService.register(data as any);
 
       const response: ApiResponse = {
         success: true,
@@ -49,7 +49,7 @@ export class AuthController {
         return;
       }
 
-      const result = await AuthService.login(data.email, data.password);
+      const result = await AuthService.login((data as any).email, (data as any).password);
 
       const response: ApiResponse = {
         success: true,
@@ -80,7 +80,7 @@ export class AuthController {
         return;
       }
 
-      const tokens = await AuthService.refreshToken(data.refreshToken);
+      const tokens = await AuthService.refreshToken((data as any).refreshToken);
 
       const response: ApiResponse = {
         success: true,

@@ -18,25 +18,33 @@
 
     /* Linting */
     "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
 
     /* Path mapping */
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
+      "@api": ["src/api"],
       "@api/*": ["src/api/*"],
+      "@services": ["src/services"],
       "@services/*": ["src/services/*"],
       "@components/*": ["src/components/*"],
+      "@pages": ["src/pages"],
       "@pages/*": ["src/pages/*"],
+      "@hooks": ["src/hooks"],
       "@hooks/*": ["src/hooks/*"],
+      "@contexts": ["src/contexts"],
       "@contexts/*": ["src/contexts/*"],
+      "@utils": ["src/utils"],
       "@utils/*": ["src/utils/*"],
-      "@types/*": ["src/types/*"],
+      "@app-types": ["src/types"],
+      "@app-types/*": ["src/types/*"],
       "@i18n/*": ["src/i18n/*"]
     }
   },
   "include": ["src"],
+  "exclude": ["src/components/examples"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

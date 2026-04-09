@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react'
-import { TerminalMessage, AITerminalContextType as AITerminalContextType } from '@types/index'
+import { TerminalMessage, AITerminalContextType as AITerminalContextType } from '@app-types/index'
 import axiosInstance from '@api/axiosInstance'
 
 const TerminalContext = createContext<AITerminalContextType | undefined>(undefined)

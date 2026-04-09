@@ -25,7 +25,7 @@
       "@guards/*": ["./guards/*"],
       "@validators/*": ["./validators/*"],
       "@utils/*": ["./utils/*"],
-      "@types/*": ["./types/*"],
+      "@app-types/*": ["./types/*"],
       "@config/*": ["./config/*"],
       "@routes/*": ["./routes/*"],
       "@integrations/*": ["./integrations/*"]

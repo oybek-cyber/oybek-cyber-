@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { useParams } from 'react-router-dom'
 import { DynamicCoursePlayer } from '@components/organisms/DynamicCoursePlayer'
-import { Course, Lesson } from '@types/index'
+import { Course, Lesson } from '@app-types/index'
 import axiosInstance from '@api/axiosInstance'
 
 export const CoursesPage: React.FC = () => {
@@ -21,10 +21,22 @@ export const CoursesPage: React.FC = () => {
       setError(null)
       try {
         const response = await axiosInstance.get('/courses')
-        const coursesData = response.data
+        // The API returns { data: { courses: [...], pagination: {...} } }
+        let coursesArray = response.data?.data?.courses || response.data?.courses || []
+        
+        // Fallback in case the wrapper structure is different
+        if (!Array.isArray(coursesArray)) {
+          if (Array.isArray(response.data?.data)) {
+            coursesArray = response.data.data
+          } else if (Array.isArray(response.data)) {
+            coursesArray = response.data
+          } else {
+            coursesArray = []
+          }
+        }
 
         // Transform API response to Course format
-        const transformedCourses: Course[] = coursesData.map((course: any) => ({
+        const transformedCourses: Course[] = coursesArray.map((course: any) => ({
           id: course.id,
           title: course.title,
           description: course.description,

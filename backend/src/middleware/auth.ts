@@ -1,5 +1,5 @@
 import { Response, NextFunction } from 'express';
-import { AuthenticatedRequest, AppError, AuthPayload } from '@types/index.js';
+import { AuthenticatedRequest, AppError, AuthPayload } from '@app-types/index.js';
 import { JWTService } from '@utils/jwt.js';
 import { AppErrorHandler } from '@utils/errors.js';
 import logger from '@config/logger.js';
