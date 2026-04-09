@@ -84,20 +84,29 @@ export const DynamicCoursePlayer: React.FC<DynamicCoursePlayerProps> = ({
             {/* Video Player Container */}
             <div className="bg-cyber-black border border-cyber-blue/20 rounded-lg overflow-hidden aspect-video lg:aspect-auto lg:h-96">
               {selectedLesson.videoId ? (
-                <iframe
-                  width="100%"
-                  height="100%"
-                  src={`https://www.youtube.com/embed/${selectedLesson.videoId}`}
-                  title={selectedLesson.title}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="w-full h-full"
-                />
+                selectedLesson.videoId.startsWith('/') || selectedLesson.videoId.startsWith('http') ? (
+                  <video
+                    src={selectedLesson.videoId}
+                    controls
+                    autoPlay
+                    className="w-full h-full object-contain bg-black"
+                  />
+                ) : (
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    src={`https://www.youtube.com/embed/${selectedLesson.videoId}`}
+                    title={selectedLesson.title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="w-full h-full"
+                  />
+                )
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-cyber-navy to-cyber-black">
                   <div className="text-center">
                     <Play size={64} className="text-cyber-blue/30 mx-auto mb-4" />
-                    <p className="text-gray-500">Video not available</p>
+                    <p className="text-gray-500">Video mavjud emas</p>
                   </div>
                 </div>
               )}

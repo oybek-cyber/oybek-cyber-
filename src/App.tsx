@@ -9,6 +9,8 @@ import { Layout } from '@components/organisms/Layout'
 import { HomePage } from '@pages/HomePage'
 import { CoursesPage } from '@pages/CoursesPage'
 import { TerminalPage } from '@pages/TerminalPage'
+import { AdminLoginPage } from '@pages/admin/AdminLoginPage'
+import { AdminDashboard } from '@pages/admin/AdminDashboard'
 import { motion } from 'framer-motion'
 
 const LoadingSpinner: React.FC = () => (
@@ -24,18 +26,29 @@ const LoadingSpinner: React.FC = () => (
 function AppContent() {
   return (
     <Router>
-      <Navbar />
-      <Layout>
-        <Suspense fallback={<LoadingSpinner />}>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/courses" element={<CoursesPage />} />
-            <Route path="/courses/:courseId" element={<CoursesPage />} />
-            <Route path="/terminal" element={<TerminalPage />} />
-            <Route path="*" element={<HomePage />} />
-          </Routes>
-        </Suspense>
-      </Layout>
+      <Routes>
+        {/* ─── Yashirin Admin Panel (Navbar va Layout YO'Q) ─── */}
+        <Route path="/x-panel" element={<AdminLoginPage />} />
+        <Route path="/x-panel/dashboard" element={<AdminDashboard />} />
+
+        {/* ─── Ommaviy sahifalar (Navbar va Layout BILAN) ─── */}
+        <Route path="/*" element={
+          <>
+            <Navbar />
+            <Layout>
+              <Suspense fallback={<LoadingSpinner />}>
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/courses" element={<CoursesPage />} />
+                  <Route path="/courses/:courseId" element={<CoursesPage />} />
+                  <Route path="/terminal" element={<TerminalPage />} />
+                  <Route path="*" element={<HomePage />} />
+                </Routes>
+              </Suspense>
+            </Layout>
+          </>
+        } />
+      </Routes>
     </Router>
   )
 }
