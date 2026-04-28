@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import { AuthenticatedRequest, ApiResponse } from '@app-types/index.js';
 import { NewsService } from '@services/NewsService.js';
+import { RssFeedService } from '@services/RssFeedService.js';
 import logger from '@config/logger.js';
 
 export class NewsController {
@@ -99,5 +100,53 @@ export class NewsController {
       logger.error('Mark as read error:', error);
       throw error;
     }
+  }
+
+  // ─── Live RSS Feed ──────────────────────────────────────────────────────────
+  static async getLiveNews(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      const forceRefresh = req.query.refresh === 'true';
+      const severity = req.query.severity as string | undefined;
+      const search = req.query.q as string | undefined;
+
+      let articles = await RssFeedService.getLiveNews(forceRefresh);
+
+      // Filter by severity
+      if (severity && severity !== 'all') {
+        articles = articles.filter((a) => a.severity === severity);
+      }
+
+      // Filter by search query
+      if (search) {
+        const q = search.toLowerCase();
+        articles = articles.filter(
+          (a) =>
+            a.title.toLowerCase().includes(q) ||
+            a.description.toLowerCase().includes(q) ||
+            a.source.toLowerCase().includes(q)
+        );
+      }
+
+      const response: ApiResponse = {
+        success: true,
+        status: 200,
+        message: 'Live news retrieved successfully',
+        data: {
+          articles,
+          total: articles.length,
+          cache: RssFeedService.getCacheStatus(),
+        },
+        timestamp: new Date().toISOString(),
+      };
+
+      res.json(response);
+    } catch (error) {
+      logger.error('Get live news error:', error);
+      throw error;
+    }
+  }
+
+  static async getCacheStatus(req: AuthenticatedRequest, res: Response): Promise<void> {
+    res.json({ success: true, data: RssFeedService.getCacheStatus() });
   }
 }

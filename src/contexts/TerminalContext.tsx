@@ -43,7 +43,7 @@ MAVZULAR:
 
 // ─── Gemini API ───────────────────────────────────────────────────────────────
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || ''
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`
 
 async function callGemini(history: { role: string; content: string }[]): Promise<string> {
   if (!GEMINI_API_KEY || GEMINI_API_KEY === 'your-gemini-api-key-here') {
@@ -59,32 +59,52 @@ async function callGemini(history: { role: string; content: string }[]): Promise
     ].join('\n')
   }
 
-  const contents = history.map(m => ({
-    role: m.role === 'user' ? 'user' : 'model',
-    parts: [{ text: m.content }]
-  }))
+  // Gemini requires alternating user/model roles. Let's ensure this.
+  const contents: any[] = []
+  let lastRole: string | null = null
 
-  const response = await fetch(GEMINI_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents,
-      systemInstruction: { parts: [{ text: CODING_MENTOR_PROMPT }] },
-      generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 2000,
-        topP: 0.9,
-      }
-    })
-  })
-
-  if (!response.ok) {
-    const err = await response.json().catch(() => ({}))
-    throw new Error((err as any)?.error?.message || `HTTP ${response.status}`)
+  for (const m of history) {
+    const role = m.role === 'user' ? 'user' : 'model'
+    if (role === lastRole) {
+      // If same role twice, append to last message instead of adding new one
+      contents[contents.length - 1].parts[0].text += '\n' + m.content
+    } else {
+      contents.push({
+        role,
+        parts: [{ text: m.content }]
+      })
+      lastRole = role
+    }
   }
 
-  const data = await response.json()
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || 'Javob olinmadi'
+  try {
+    const response = await fetch(GEMINI_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents,
+        systemInstruction: { parts: [{ text: CODING_MENTOR_PROMPT }] },
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 2000,
+          topP: 0.9,
+        }
+      })
+    })
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}))
+      const msg = (err as any)?.error?.message || `HTTP ${response.status}`
+      console.error('Gemini API Error:', err)
+      throw new Error(msg)
+    }
+
+    const data = await response.json()
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || 'Javob olinmadi'
+  } catch (error) {
+    console.error('Gemini Fetch Error:', error)
+    throw error
+  }
 }
 
 // ─── Context ──────────────────────────────────────────────────────────────────

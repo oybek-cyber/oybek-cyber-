@@ -16,6 +16,7 @@ export const registerSchema = z.object({
     .regex(/[!@#$%^&*]/, 'Must contain special character'),
   firstName: z.string().optional(),
   lastName: z.string().optional(),
+  phone: z.string().optional(),
 });
 
 export const loginSchema = z.object({

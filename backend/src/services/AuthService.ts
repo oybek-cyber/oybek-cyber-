@@ -4,6 +4,7 @@ import { PasswordService } from '@utils/password.js';
 import { AppErrorHandler } from '@utils/errors.js';
 import { TokenPair, AuthPayload } from '@app-types/index.js';
 import logger from '@config/logger.js';
+import { mailService } from './mailService.js';
 
 export class AuthService {
   static async register(data: {
@@ -12,6 +13,7 @@ export class AuthService {
     password: string;
     firstName?: string;
     lastName?: string;
+    phone?: string;
   }): Promise<any> {
     // Check if user exists
     const existingEmail = await UserRepository.findByEmail(data.email);
@@ -33,23 +35,81 @@ export class AuthService {
     // Hash password
     const hashedPassword = await PasswordService.hash(data.password);
 
-    // Create user
+    // Generate 6-digit OTP
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const verificationCodeExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 mins
+
+    // Create user (Auto-verify email for demo purposes)
     const user = await UserRepository.create({
       email: data.email,
       username: data.username,
       password: hashedPassword,
       firstName: data.firstName,
       lastName: data.lastName,
-      role: 'STUDENT',
+      phone: data.phone,
+      role: 'STUDENT'
     });
 
-    logger.info(`New user registered: ${user.id} (${user.email})`);
+    // Auto-verify email
+    await UserRepository.update(user.id, {
+      emailVerified: true
+    });
+
+    logger.info(`New user registered and auto-verified: ${user.id} (${user.email})`);
 
     // Generate tokens
     const tokens = this.generateTokenPair(user.id, user.email, user.username, user.role);
 
     // Save refresh token
-    const expiryDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+    const expiryDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    await UserRepository.saveRefreshToken(user.id, tokens.refreshToken, expiryDate);
+
+    return {
+      user: {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+      },
+      ...tokens,
+    };
+  }
+
+  static async verifyEmail(email: string, code: string): Promise<any> {
+    const user = await UserRepository.findByEmail(email);
+    
+    if (!user) {
+      throw AppErrorHandler.notFound('User not found');
+    }
+    if (user.emailVerified) {
+      throw AppErrorHandler.badRequest('Email already verified');
+    }
+    
+    // Check if code matches and is not expired
+    const userDb = await prisma.user.findUnique({ where: { email } });
+    if (!userDb?.verificationCode || userDb.verificationCode !== code) {
+      throw AppErrorHandler.badRequest('Invalid verification code');
+    }
+    if (!userDb.verificationCodeExpires || userDb.verificationCodeExpires < new Date()) {
+      throw AppErrorHandler.badRequest('Verification code expired');
+    }
+
+    // Mark as verified
+    await UserRepository.update(user.id, {
+      emailVerified: true,
+      verificationCode: null,
+      verificationCodeExpires: null
+    });
+
+    logger.info(`User email verified: ${user.id}`);
+
+    // Generate tokens
+    const tokens = this.generateTokenPair(user.id, user.email, user.username, user.role);
+
+    // Save refresh token
+    const expiryDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     await UserRepository.saveRefreshToken(user.id, tokens.refreshToken, expiryDate);
 
     return {
@@ -82,6 +142,15 @@ export class AuthService {
 
     if (!user.isActive) {
       throw AppErrorHandler.forbidden('User account is inactive');
+    }
+    if (!user.emailVerified) {
+      // Send a new code if they try to login without verifying
+      const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+      const verificationCodeExpires = new Date(Date.now() + 15 * 60 * 1000);
+      await UserRepository.update(user.id, { verificationCode, verificationCodeExpires });
+      mailService.sendVerificationEmail(user.email, verificationCode).catch(() => {});
+      
+      throw AppErrorHandler.forbidden('Email not verified. A new verification code has been sent to your email.');
     }
 
     logger.info(`User logged in: ${user.id}`);

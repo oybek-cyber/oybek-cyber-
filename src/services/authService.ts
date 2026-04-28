@@ -12,10 +12,12 @@ export interface LoginCredentials {
 
 export interface RegisterData {
   email: string;
+  username: string; // Required by backend
   password: string;
   confirmPassword: string;
   firstName: string;
   lastName: string;
+  phone?: string;
   role?: 'student' | 'instructor' | 'admin';
 }
 
@@ -52,19 +54,20 @@ class AuthService {
    */
   async login(credentials: LoginCredentials): Promise<AuthResponse | null> {
     try {
-      const response = await axiosInstance.post<AuthResponse>(
+      const response = await axiosInstance.post(
         '/auth/login',
         credentials
       );
 
-      const { token, refreshToken, user } = response.data;
+      const payload = response.data.data;
+      const { accessToken: token, refreshToken, user } = payload;
 
       // Store tokens and user data in localStorage
       localStorage.setItem('authToken', token);
       localStorage.setItem('refreshToken', refreshToken);
       localStorage.setItem('user', JSON.stringify(user));
 
-      return response.data;
+      return payload;
     } catch (error) {
       const errorMessage = handleApiError(
         error,
@@ -83,19 +86,20 @@ class AuthService {
       // Remove confirmPassword before sending to backend
       const { confirmPassword, ...registerPayload } = data;
 
-      const response = await axiosInstance.post<AuthResponse>(
+      const response = await axiosInstance.post(
         '/auth/register',
         registerPayload
       );
 
-      const { token, refreshToken, user } = response.data;
+      const payload = response.data.data;
+      const { accessToken: token, refreshToken, user } = payload;
 
       // Store tokens and user data in localStorage
       localStorage.setItem('authToken', token);
       localStorage.setItem('refreshToken', refreshToken);
       localStorage.setItem('user', JSON.stringify(user));
 
-      return response.data;
+      return payload;
     } catch (error) {
       const errorMessage = handleApiError(
         error,
@@ -139,19 +143,20 @@ class AuthService {
         throw new Error('No refresh token available');
       }
 
-      const response = await axiosInstance.post<AuthResponse>(
+      const response = await axiosInstance.post(
         '/auth/refresh',
         { refreshToken }
       );
 
-      const { token, refreshToken: newRefreshToken, user } = response.data;
+      const payload = response.data.data;
+      const { accessToken: token, refreshToken: newRefreshToken, user } = payload;
 
       // Update tokens in localStorage
       localStorage.setItem('authToken', token);
       localStorage.setItem('refreshToken', newRefreshToken);
       localStorage.setItem('user', JSON.stringify(user));
 
-      return response.data;
+      return payload;
     } catch (error) {
       // If refresh fails, logout the user
       this.logout();

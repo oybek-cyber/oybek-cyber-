@@ -16,3 +16,12 @@ coverage/
 .next/
 out/
 .turbo/
+
+# Large media files
+public/uploads/
+*.wmv
+*.mp4
+
+# Databases
+*.db
+backend/prisma/*.db

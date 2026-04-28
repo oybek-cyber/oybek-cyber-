@@ -9,6 +9,8 @@ import authRoutes from '@routes/auth.js';
 import terminalRoutes from '@routes/terminal.js';
 import courseRoutes from '@routes/courses.js';
 import newsRoutes from '@routes/news.js';
+import discussionRoutes from '@routes/discussion.js';
+import communityRoutes from '@routes/community.js';
 import healthRoutes from '@routes/health.js';
 
 export const setupMiddleware = (app: Express): void => {
@@ -43,8 +45,9 @@ export const setupRoutes = (app: Express): void => {
   app.use('/api/terminal', terminalRoutes);
   app.use('/api/courses', courseRoutes);
   app.use('/api/news', newsRoutes);
-
-  // 404 handler
+  app.use('/api/discussions', discussionRoutes);
+  app.use('/api/community', communityRoutes);
+  app.use('/api/health', healthRoutes);
   app.use(notFoundHandler);
 
   // Error handler (must be last)

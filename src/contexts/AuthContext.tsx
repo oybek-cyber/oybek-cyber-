@@ -6,7 +6,7 @@ interface AuthContextType {
   user: User | null
   isAuthenticated: boolean
   login: (email: string, password: string) => Promise<void>
-  signup: (email: string, password: string, name: string) => Promise<void>
+  signup: (email: string, password: string, name: string, phone: string) => Promise<void>
   logout: () => void
   loginWithGoogle: () => Promise<void>
   isLoading: boolean
@@ -35,10 +35,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       const response = await AuthService.login({ email, password })
       if (response) {
+        const fullName = [response.user.firstName, response.user.lastName].filter(Boolean).join(' ');
         const userData: User = {
           id: response.user.id,
           email: response.user.email,
-          name: `${response.user.firstName} ${response.user.lastName}`,
+          name: fullName || response.user.email.split('@')[0] || 'User',
           enrolledCourses: [],
         }
         setUser(userData)
@@ -51,22 +52,29 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }
 
-  const signup = async (email: string, password: string, name: string) => {
+  const signup = async (email: string, password: string, name: string, phone: string) => {
     setIsLoading(true)
     try {
       const [firstName, lastName] = name.split(' ')
+      // Generate a username from the email prefix and trim to max 20 chars
+      const emailPrefix = email.split('@')[0].substring(0, 15)
+      const username = `${emailPrefix}${Math.floor(Math.random() * 1000)}`
+
       const response = await AuthService.register({
         email,
+        username,
         password,
         confirmPassword: password,
         firstName,
         lastName: lastName || '',
+        phone,
       })
       if (response) {
+        const fullName = [response.user.firstName, response.user.lastName].filter(Boolean).join(' ');
         const userData: User = {
           id: response.user.id,
           email: response.user.email,
-          name: `${response.user.firstName} ${response.user.lastName}`,
+          name: fullName || response.user.email.split('@')[0] || 'User',
           enrolledCourses: [],
         }
         setUser(userData)

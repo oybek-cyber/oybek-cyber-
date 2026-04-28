@@ -23,10 +23,13 @@ model User {
   lastName  String?
   avatar    String?
   bio       String?
+  phone     String?
 
   role          String  @default("STUDENT")
   isActive      Boolean @default(true)
   emailVerified Boolean @default(false)
+  verificationCode String?
+  verificationCodeExpires DateTime?
 
   googleId    String? @unique
   googleEmail String?
@@ -40,10 +43,23 @@ model User {
   quizAnswers   QuizAnswer[]
   terminals     TerminalSession[]
   newsReadings  NewsArticle[]      @relation("UserNewsReadings")
+  discussions   Discussion[]
+  communityMessages CommunityMessage[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
+}
+
+// ... existing models ...
+
+model CommunityMessage {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model RefreshToken {
@@ -86,6 +102,8 @@ model Lesson {
   slug        String
   description String?
   content     String?
+  videoUrl    String?
+  youtubeVideoId String?
   order       Int
 
   createdById String
@@ -94,6 +112,7 @@ model Lesson {
   resources Resource[]
   progress  LessonProgress[]
   quiz      Quiz?
+  discussions Discussion[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -302,6 +321,22 @@ model Assignment {
   title       String
   description String?
   dueDate     DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Discussion {
+  id        String   @id @default(cuid())
+  lessonId  String
+  lesson    Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  userName  String
+  question  String
+  answer    String?
+  isAdminReplied Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

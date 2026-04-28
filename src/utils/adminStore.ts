@@ -85,11 +85,11 @@ const DEFAULT_COURSES: Course[] = [
     duration: 40,
     videoPlaylistId: 'PLIhvC56v63IJVXv0GJcl9vO5Z6znCVb1-',
     lessons: [
-      { id: 'ccna-1', title: 'Networking fundamentals - OSI Model', videoId: 'vv4y_uOneC0', duration: 15, order: 1, transcript: 'Bu darsda OSI modelini chuqur ko\'ramiz...' },
-      { id: 'ccna-2', title: 'IP Addressing and Subnetting', videoId: '1TgSuB3VG0k', duration: 20, order: 2, transcript: 'IP manzillash va subnetting asoslari...' },
-      { id: 'ccna-3', title: 'VLANs and Trunking', videoId: 'MmwF1oHOvmg', duration: 18, order: 3, transcript: 'VLAN va trunk portlar...' },
-      { id: 'ccna-4', title: 'OSPF Routing Protocol', videoId: 'kfvJ8QVJscc', duration: 22, order: 4, transcript: 'OSPF dinamik routing...' },
-      { id: 'ccna-5', title: 'Access Control Lists (ACL)', videoId: 'MRBD7BjHJkA', duration: 19, order: 5, transcript: 'ACL bilan tarmoq himoyasi...' },
+      { id: 'ccna-1', title: 'Networking fundamentals - OSI Model', videoId: '', duration: 15, order: 1, transcript: 'Bu darsda OSI modelini chuqur ko\'ramiz...' },
+      { id: 'ccna-2', title: 'IP Addressing and Subnetting', videoId: '', duration: 20, order: 2, transcript: 'IP manzillash va subnetting asoslari...' },
+      { id: 'ccna-3', title: 'VLANs and Trunking', videoId: '', duration: 18, order: 3, transcript: 'VLAN va trunk portlar...' },
+      { id: 'ccna-4', title: 'OSPF Routing Protocol', videoId: '', duration: 22, order: 4, transcript: 'OSPF dinamik routing...' },
+      { id: 'ccna-5', title: 'Access Control Lists (ACL)', videoId: '', duration: 19, order: 5, transcript: 'ACL bilan tarmoq himoyasi...' },
     ],
   },
   {
@@ -102,9 +102,9 @@ const DEFAULT_COURSES: Course[] = [
     duration: 35,
     videoPlaylistId: '',
     lessons: [
-      { id: 'ws-1', title: 'Windows Server Installation & Setup', videoId: 'tS13bQ1NfhQ', duration: 18, order: 1, transcript: 'Windows Server 2022 o\'rnatish...' },
-      { id: 'ws-2', title: 'Active Directory Domain Services', videoId: 'u7WmigblwnI', duration: 25, order: 2, transcript: 'Active Directory asoslari...' },
-      { id: 'ws-3', title: 'Group Policy Management', videoId: 'DKi4lABTRp0', duration: 22, order: 3, transcript: 'Group Policy sozlamalari...' },
+      { id: 'ws-1', title: 'Windows Server Installation & Setup', videoId: '', duration: 18, order: 1, transcript: 'Windows Server 2022 o\'rnatish...' },
+      { id: 'ws-2', title: 'Active Directory Domain Services', videoId: '', duration: 25, order: 2, transcript: 'Active Directory asoslari...' },
+      { id: 'ws-3', title: 'Group Policy Management', videoId: '', duration: 22, order: 3, transcript: 'Group Policy sozlamalari...' },
     ],
   },
   {
@@ -117,9 +117,9 @@ const DEFAULT_COURSES: Course[] = [
     duration: 45,
     videoPlaylistId: '',
     lessons: [
-      { id: 'lx-1', title: 'Linux va Terminal asoslari', videoId: 'RRqiru2K8b0', duration: 17, order: 1, transcript: 'Terminal orqali Linux boshqarish...' },
-      { id: 'lx-2', title: 'Fayl tizimi va navigatsiya', videoId: 'A3G-3hp88mo', duration: 14, order: 2, transcript: 'cd, ls, pwd, mkdir, rm komandalari...' },
-      { id: 'lx-3', title: 'Bash Scripting asoslari', videoId: 'v-F3YLd6oMw', duration: 26, order: 3, transcript: 'Bash skript yaratish va ishlatish...' },
+      { id: 'lx-1', title: 'Linux va Terminal asoslari', videoId: '', duration: 17, order: 1, transcript: 'Terminal orqali Linux boshqarish...' },
+      { id: 'lx-2', title: 'Fayl tizimi va navigatsiya', videoId: '', duration: 14, order: 2, transcript: 'cd, ls, pwd, mkdir, rm komandalari...' },
+      { id: 'lx-3', title: 'Bash Scripting asoslari', videoId: '', duration: 26, order: 3, transcript: 'Bash skript yaratish va ishlatish...' },
     ],
   },
   {
@@ -132,9 +132,9 @@ const DEFAULT_COURSES: Course[] = [
     duration: 50,
     videoPlaylistId: '',
     lessons: [
-      { id: 'eh-1', title: 'Ethical Hacking kirish va qonun', videoId: 'fNzpcB7ODxQ', duration: 14, order: 1, transcript: 'Etik hacking nima va qonuniy chegaralar...' },
-      { id: 'eh-2', title: 'Kali Linux o\'rnatish va sozlash', videoId: 'lZAoFs75_cs', duration: 20, order: 2, transcript: 'Kali Linux setup va muhit...' },
-      { id: 'eh-3', title: 'Nmap bilan tarmoq skanerlash', videoId: '4t4kBkMsDbQ', duration: 22, order: 3, transcript: 'Nmap komanda va scan turlari...' },
+      { id: 'eh-1', title: 'Ethical Hacking kirish va qonun', videoId: '', duration: 14, order: 1, transcript: 'Etik hacking nima va qonuniy chegaralar...' },
+      { id: 'eh-2', title: 'Kali Linux o\'rnatish va sozlash', videoId: '', duration: 20, order: 2, transcript: 'Kali Linux setup va muhit...' },
+      { id: 'eh-3', title: 'Nmap bilan tarmoq skanerlash', videoId: '', duration: 22, order: 3, transcript: 'Nmap komanda va scan turlari...' },
     ],
   },
 ]

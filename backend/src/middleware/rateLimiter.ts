@@ -3,7 +3,7 @@ import { env } from '@config/env.js';
 
 export const apiLimiter = rateLimit({
   windowMs: env.RATE_LIMIT_WINDOW_MS,
-  max: env.RATE_LIMIT_MAX_REQUESTS,
+  max: 1000, // Increased to 1000 for development
   message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
@@ -15,7 +15,7 @@ export const apiLimiter = rateLimit({
 
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // 5 attempts
+  max: 200, // Increased for development to 200 attempts
   message: 'Too many login attempts, please try again later.',
   skipSuccessfulRequests: true,
 });

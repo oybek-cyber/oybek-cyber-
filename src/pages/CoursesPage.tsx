@@ -4,7 +4,10 @@ import { motion } from 'framer-motion'
 import { Play, Clock, BookOpen, Users, Star, ChevronRight, CheckCircle } from 'lucide-react'
 import { Course, Lesson } from '@app-types/index'
 import axiosInstance from '@api/axiosInstance'
-import { useParams } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
+import { LessonDiscussion } from '@components/organisms/LessonDiscussion'
+import { useAuth } from '@contexts/AuthContext'
+import { Lock } from 'lucide-react'
 
 // ─── Demo courses bilan real YouTube videolar ──────────────────────────────
 const DEMO_COURSES: Course[] = [
@@ -18,14 +21,14 @@ const DEMO_COURSES: Course[] = [
     duration: 40,
     videoPlaylistId: 'PLIhvC56v63IJVXv0GJcl9vO5Z6znCVb1-',
     lessons: [
-      { id: 'ccna-1', title: 'Networking fundamentals - OSI Model', videoId: 'vv4y_uOneC0', duration: 15, order: 1, transcript: 'Bu darsda OSI modelini chuqur ko\'ramiz...' },
-      { id: 'ccna-2', title: 'IP Addressing and Subnetting', videoId: '1TgSuB3VG0k', duration: 20, order: 2, transcript: 'IP manzillash va subnetting asoslari...' },
-      { id: 'ccna-3', title: 'VLANs and Trunking', videoId: 'MmwF1oHOvmg', duration: 18, order: 3, transcript: 'VLAN va trunk portlar...' },
-      { id: 'ccna-4', title: 'OSPF Routing Protocol', videoId: 'kfvJ8QVJscc', duration: 22, order: 4, transcript: 'OSPF dinamik routing...' },
-      { id: 'ccna-5', title: 'Access Control Lists (ACL)', videoId: 'MRBD7BjHJkA', duration: 19, order: 5, transcript: 'ACL bilan tarmoq himoyasi...' },
-      { id: 'ccna-6', title: 'NAT and PAT Configuration', videoId: 'QBqPEoKVoqE', duration: 16, order: 6, transcript: 'NAT va PAT konfiguratsiyasi...' },
-      { id: 'ccna-7', title: 'WAN Technologies', videoId: 'JtRKKLCCEq8', duration: 25, order: 7, transcript: 'WAN texnologiyalari...' },
-      { id: 'ccna-8', title: 'Network Security Basics', videoId: 'E03gh1huvW4', duration: 21, order: 8, transcript: 'Tarmoq xavfsizligi asoslari...' },
+      { id: 'ccna-1', title: 'Networking fundamentals - OSI Model', videoId: 'n275iWp-uS4', duration: 15, order: 1, transcript: 'Bu darsda OSI modelini chuqur ko\'ramiz...' },
+      { id: 'ccna-2', title: 'IP Addressing and Subnetting', videoId: 'ecCuyq-Wprc', duration: 20, order: 2, transcript: 'IP manzillash va subnetting asoslari...' },
+      { id: 'ccna-3', title: 'VLANs and Trunking', videoId: 'jmdXv6M-eR0', duration: 18, order: 3, transcript: 'VLAN va trunk portlar...' },
+      { id: 'ccna-4', title: 'OSPF Routing Protocol', videoId: '3m27C6r-N8M', duration: 22, order: 4, transcript: 'OSPF dinamik routing...' },
+      { id: 'ccna-5', title: 'Access Control Lists (ACL)', videoId: 'aX_W_RIn2jE', duration: 19, order: 5, transcript: 'ACL bilan tarmoq himoyasi...' },
+      { id: 'ccna-6', title: 'NAT and PAT Configuration', videoId: '4Tsc2-zV9h0', duration: 16, order: 6, transcript: 'NAT va PAT konfiguratsiyasi...' },
+      { id: 'ccna-7', title: 'WAN Technologies', videoId: 'O6v_R9hK2oI', duration: 25, order: 7, transcript: 'WAN texnologiyalari...' },
+      { id: 'ccna-8', title: 'Network Security Basics', videoId: 'lVshXU7979o', duration: 21, order: 8, transcript: 'Tarmoq xavfsizligi asoslari...' },
     ],
   },
   {
@@ -38,13 +41,13 @@ const DEMO_COURSES: Course[] = [
     duration: 35,
     videoPlaylistId: 'PL83Rk4V1eT8nBp4x_yqUjwR8xlMzfJ0VI',
     lessons: [
-      { id: 'ws-1', title: 'Windows Server Installation & Setup', videoId: 'tS13bQ1NfhQ', duration: 18, order: 1, transcript: 'Windows Server 2022 o\'rnatish...' },
-      { id: 'ws-2', title: 'Active Directory Domain Services', videoId: 'u7WmigblwnI', duration: 25, order: 2, transcript: 'Active Directory asoslari...' },
-      { id: 'ws-3', title: 'Group Policy Management', videoId: 'DKi4lABTRp0', duration: 22, order: 3, transcript: 'Group Policy sozlamalari...' },
-      { id: 'ws-4', title: 'DNS Configuration', videoId: 'YEVEomWolXg', duration: 15, order: 4, transcript: 'DNS xizmati sozlash...' },
-      { id: 'ws-5', title: 'DHCP Server Setup', videoId: '8BNShwGJ5wk', duration: 14, order: 5, transcript: 'DHCP server konfiguratsiya...' },
-      { id: 'ws-6', title: 'File Server and Permissions', videoId: 'MiHRd65SMVA', duration: 20, order: 6, transcript: 'File server va ruxsatlar...' },
-      { id: 'ws-7', title: 'Remote Desktop Services', videoId: '0l-3gOxPbpI', duration: 17, order: 7, transcript: 'Remote Desktop xizmati...' },
+      { id: 'ws-1', title: 'Windows Server Installation & Setup', videoId: '1668V0m2pM8', duration: 18, order: 1, transcript: 'Windows Server 2022 o\'rnatish...' },
+      { id: 'ws-2', title: 'Active Directory Domain Services', videoId: 'GgG87pT405U', duration: 25, order: 2, transcript: 'Active Directory asoslari...' },
+      { id: 'ws-3', title: 'Group Policy Management', videoId: 'Ssq88V_W1cE', duration: 22, order: 3, transcript: 'Group Policy sozlamalari...' },
+      { id: 'ws-4', title: 'DNS Configuration', videoId: 'b_f4UjH3V6s', duration: 15, order: 4, transcript: 'DNS xizmati sozlash...' },
+      { id: 'ws-5', title: 'DHCP Server Setup', videoId: 'v77V8vY_q0A', duration: 14, order: 5, transcript: 'DHCP server konfiguratsiya...' },
+      { id: 'ws-6', title: 'File Server and Permissions', videoId: '7T5V6hG_r9Q', duration: 20, order: 6, transcript: 'File server va ruxsatlar...' },
+      { id: 'ws-7', title: 'Remote Desktop Services', videoId: 'd6yP83R-h2U', duration: 17, order: 7, transcript: 'Remote Desktop xizmati...' },
     ],
   },
   {
@@ -57,15 +60,15 @@ const DEMO_COURSES: Course[] = [
     duration: 45,
     videoPlaylistId: 'PLtGnc4I6s8dkBknNhj_9ueHPCxSMlO1cI',
     lessons: [
-      { id: 'lx-1', title: 'Linux va Terminal asoslari', videoId: 'RRqiru2K8b0', duration: 17, order: 1, transcript: 'Terminal orqali Linux boshqarish...' },
-      { id: 'lx-2', title: 'Fayl tizimi va navigatsiya', videoId: 'A3G-3hp88mo', duration: 14, order: 2, transcript: 'cd, ls, pwd, mkdir, rm komandalari...' },
-      { id: 'lx-3', title: 'Foydalanuvchilar va guruhlar', videoId: 'jwnvKOjmtMo', duration: 19, order: 3, transcript: 'useradd, usermod, passwd...' },
-      { id: 'lx-4', title: 'Fayllar ruxsatlari chmod & chown', videoId: '4e669hSjaX8', duration: 15, order: 4, transcript: 'chmod 755 va chown boshqaruvi...' },
-      { id: 'lx-5', title: 'Bash Scripting asoslari', videoId: 'v-F3YLd6oMw', duration: 26, order: 5, transcript: 'Bash skript yaratish va ishlatish...' },
-      { id: 'lx-6', title: 'Tarmoq konfiguratsiyasi', videoId: 'yCj7n4KOHno', duration: 18, order: 6, transcript: 'ifconfig, ip addr, netstat...' },
-      { id: 'lx-7', title: 'UFW Firewall sozlamalar', videoId: 'qPEA6J9pjG8', duration: 16, order: 7, transcript: 'UFW bilan xavfsizlik devori...' },
-      { id: 'lx-8', title: 'SSH va xavfsiz ulanish', videoId: 'Atbl7D_yPug', duration: 20, order: 8, transcript: 'SSH konfiguratsiya va xavfsizlik...' },
-      { id: 'lx-9', title: 'Cron Jobs va avtomatlashtirish', videoId: 'v952m13p-b4', duration: 13, order: 9, transcript: 'Cron orqali vazifalar avtomatlash...' },
+      { id: 'lx-1', title: 'Linux va Terminal asoslari', videoId: 'v_UbeHsa69U', duration: 17, order: 1, transcript: 'Terminal orqali Linux boshqarish...' },
+      { id: 'lx-2', title: 'Fayl tizimi va navigatsiya', videoId: 'h3_fA-X19L8', duration: 14, order: 2, transcript: 'cd, ls, pwd, mkdir, rm komandalari...' },
+      { id: 'lx-3', title: 'Foydalanuvchilar va guruhlar', videoId: 'B0696gE09-8', duration: 19, order: 3, transcript: 'useradd, usermod, passwd...' },
+      { id: 'lx-4', title: 'Fayllar ruxsatlari chmod & chown', videoId: 'r3S_6X_Y_q5', duration: 15, order: 4, transcript: 'chmod 755 va chown boshqaruvi...' },
+      { id: 'lx-5', title: 'Bash Scripting asoslari', videoId: 'mX9re7_2G4U', duration: 26, order: 5, transcript: 'Bash skript yaratish va ishlatish...' },
+      { id: 'lx-6', title: 'Tarmoq konfiguratsiyasi', videoId: 'zM88Zt5R0kY', duration: 18, order: 6, transcript: 'ifconfig, ip addr, netstat...' },
+      { id: 'lx-7', title: 'UFW Firewall sozlamalar', videoId: 'v77V8vY_q0A', duration: 16, order: 7, transcript: 'UFW bilan xavfsizlik devori...' },
+      { id: 'lx-8', title: 'SSH va xavfsiz ulanish', videoId: 'rZ_A-X19Lrk', duration: 20, order: 8, transcript: 'SSH konfiguratsiya va xavfsizlik...' },
+      { id: 'lx-9', title: 'Cron Jobs va avtomatlashtirish', videoId: 'GgG87pT405U', duration: 13, order: 9, transcript: 'Cron orqali vazifalar avtomatlash...' },
     ],
   },
   {
@@ -78,15 +81,15 @@ const DEMO_COURSES: Course[] = [
     duration: 50,
     videoPlaylistId: 'PLLKT__MCUeixCoi2jtP2Jj8nZzM4MOzBL',
     lessons: [
-      { id: 'eh-1', title: 'Ethical Hacking kirish va qonun', videoId: 'fNzpcB7ODxQ', duration: 14, order: 1, transcript: 'Etik hacking nima va qonuniy chegaralar...' },
-      { id: 'eh-2', title: 'Kali Linux o\'rnatish va sozlash', videoId: 'lZAoFs75_cs', duration: 20, order: 2, transcript: 'Kali Linux setup va muhit...' },
-      { id: 'eh-3', title: 'Nmap bilan tarmoq skanerlash', videoId: '4t4kBkMsDbQ', duration: 22, order: 3, transcript: 'Nmap komanda va scan turlari...' },
-      { id: 'eh-4', title: 'Metasploit Framework', videoId: 'QltiGGxlJ4M', duration: 28, order: 4, transcript: 'Metasploit asosiy buyruqlar...' },
-      { id: 'eh-5', title: 'Web App Zaifliklarni Topish', videoId: 'jmgsgjPn1vs', duration: 24, order: 5, transcript: 'SQL Injection, XSS, CSRF...' },
-      { id: 'eh-6', title: 'Burp Suite bilan Web Testing', videoId: 'G3hpAeoZ4ek', duration: 26, order: 6, transcript: 'Burp Suite interceptor va scanner...' },
-      { id: 'eh-7', title: 'Password Cracking texnikalari', videoId: 'aXkPHZ5f2rI', duration: 19, order: 7, transcript: 'Hashcat, John the Ripper...' },
-      { id: 'eh-8', title: 'Social Engineering hujumlar', videoId: 'PWVN3Rq4gzw', duration: 17, order: 8, transcript: 'Phishing va social engineering...' },
-      { id: 'eh-9', title: 'Hisobot yozish va metodologiya', videoId: 'i2S8uiZ2cRM', duration: 21, order: 9, transcript: 'Penetration test hisoboti...' },
+      { id: 'eh-1', title: 'Ethical Hacking kirish va qonun', videoId: '3Kq1MIfTWCE', duration: 14, order: 1, transcript: 'Etik hacking nima va qonuniy chegaralar...' },
+      { id: 'eh-2', title: 'Kali Linux o\'rnatish va sozlash', videoId: 'Z0b-4r3iU98', duration: 20, order: 2, transcript: 'Kali Linux setup va muhit...' },
+      { id: 'eh-3', title: 'Nmap bilan tarmoq skanerlash', videoId: 'v5w9dD2gM3E', duration: 22, order: 3, transcript: 'Nmap komanda va scan turlari...' },
+      { id: 'eh-4', title: 'Metasploit Framework', videoId: '8lR27R6L_O8', duration: 28, order: 4, transcript: 'Metasploit asosiy buyruqlar...' },
+      { id: 'eh-5', title: 'Web App Zaifliklarni Topish', videoId: 'j6k1p8l5M9W', duration: 24, order: 5, transcript: 'SQL Injection, XSS, CSRF...' },
+      { id: 'eh-6', title: 'Burp Suite bilan Web Testing', videoId: 'S7d9n2r4B1Q', duration: 26, order: 6, transcript: 'Burp Suite interceptor va scanner...' },
+      { id: 'eh-7', title: 'Password Cracking texnikalari', videoId: 'L2k3v7hT4mJ', duration: 19, order: 7, transcript: 'Hashcat, John the Ripper...' },
+      { id: 'eh-8', title: 'Social Engineering hujumlar', videoId: 'Y2m8V8vY_q13', duration: 17, order: 8, transcript: 'Phishing va social engineering...' },
+      { id: 'eh-9', title: 'Hisobot yozish va metodologiya', videoId: 'Z3m8V8vY_q14', duration: 21, order: 9, transcript: 'Penetration test hisoboti...' },
     ],
   },
 ]
@@ -100,6 +103,7 @@ const LEVEL_COLORS: Record<string, string> = {
 export const CoursesPage: React.FC = () => {
   const { t } = useTranslation()
   const { courseId } = useParams<{ courseId?: string }>()
+  const { isAuthenticated } = useAuth()
   const [courses] = useState<Course[]>(DEMO_COURSES)
 
   // Select course based on URL param, default to first
@@ -257,7 +261,6 @@ export const CoursesPage: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* Video player area */}
           <motion.div
             key={selectedLesson?.id}
             initial={{ opacity: 0, y: 10 }}
@@ -265,14 +268,42 @@ export const CoursesPage: React.FC = () => {
             transition={{ duration: 0.3 }}
             className="lg:col-span-3 space-y-4"
           >
-            {/* YouTube embed */}
-            <div className="rounded-xl overflow-hidden border border-cyber-blue/20 bg-black aspect-video">
-              {selectedLesson?.videoId ? (
+            {(() => {
+              const currentIdx = selectedCourse.lessons.findIndex(l => l.id === selectedLesson?.id)
+              const isLocked = !isAuthenticated && currentIdx >= 3
+
+              if (isLocked) {
+                return (
+                  <div className="bg-cyber-black/80 border border-cyber-blue/30 rounded-xl p-12 flex flex-col items-center justify-center text-center shadow-[0_0_50px_rgba(0,0,0,0.5)] h-[400px]">
+                    <div className="w-20 h-20 bg-cyber-blue/10 rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(0,195,255,0.2)]">
+                      <Lock size={40} className="text-cyber-blue" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-white mb-3">Premium Darslik</h2>
+                    <p className="text-gray-400 mb-8 max-w-md mx-auto">
+                      Ushbu darslikni ko'rish va savol-javoblarda qatnashish uchun tizimdan ro'yxatdan o'tishingiz kerak. Barcha darslarga to'liq kirish huquqiga ega bo'ling.
+                    </p>
+                    <div className="flex gap-4">
+                      <Link to="/signup" className="px-6 py-2.5 bg-cyber-blue text-white font-bold rounded-lg hover:bg-cyan-500 transition-colors shadow-lg shadow-cyber-blue/20">
+                        Ro'yxatdan o'tish
+                      </Link>
+                      <Link to="/login" className="px-6 py-2.5 bg-white/5 border border-white/10 text-white font-semibold rounded-lg hover:bg-white/10 transition-colors">
+                        Tizimga kirish
+                      </Link>
+                    </div>
+                  </div>
+                )
+              }
+
+              return (
+                <>
+                  {/* YouTube embed */}
+                  <div className="rounded-xl overflow-hidden border border-cyber-blue/20 bg-black aspect-video">
+                    {selectedLesson?.videoId ? (
                 <iframe
                   key={selectedLesson.videoId}
                   width="100%"
                   height="100%"
-                  src={`https://www.youtube.com/embed/${selectedLesson.videoId}?autoplay=0&rel=0&modestbranding=1`}
+                  src={`https://www.youtube.com/embed/${selectedLesson.videoId}`}
                   title={selectedLesson.title}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   allowFullScreen
@@ -344,6 +375,10 @@ export const CoursesPage: React.FC = () => {
                 )
               })()}
             </div>
+              {selectedLesson && <LessonDiscussion lessonId={selectedLesson.id} />}
+                </>
+              )
+            })()}
           </motion.div>
         </div>
       </div>

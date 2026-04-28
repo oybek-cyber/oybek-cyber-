@@ -9,8 +9,11 @@ import { Layout } from '@components/organisms/Layout'
 import { HomePage } from '@pages/HomePage'
 import { CoursesPage } from '@pages/CoursesPage'
 import { TerminalPage } from '@pages/TerminalPage'
+import { NewsPage } from '@pages/NewsPage'
 import { AdminLoginPage } from '@pages/admin/AdminLoginPage'
 import { AdminDashboard } from '@pages/admin/AdminDashboard'
+import { LoginPage } from '@pages/LoginPage'
+import { SignupPage } from '@pages/SignupPage'
 import { motion } from 'framer-motion'
 
 const LoadingSpinner: React.FC = () => (
@@ -31,6 +34,10 @@ function AppContent() {
         <Route path="/x-panel" element={<AdminLoginPage />} />
         <Route path="/x-panel/dashboard" element={<AdminDashboard />} />
 
+        {/* ─── Ommaviy Auth Sahifalari (Navbarsiz, alohida dizayn) ─── */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+
         {/* ─── Ommaviy sahifalar (Navbar va Layout BILAN) ─── */}
         <Route path="/*" element={
           <>
@@ -42,6 +49,7 @@ function AppContent() {
                   <Route path="/courses" element={<CoursesPage />} />
                   <Route path="/courses/:courseId" element={<CoursesPage />} />
                   <Route path="/terminal" element={<TerminalPage />} />
+                  <Route path="/news" element={<NewsPage />} />
                   <Route path="*" element={<HomePage />} />
                 </Routes>
               </Suspense>

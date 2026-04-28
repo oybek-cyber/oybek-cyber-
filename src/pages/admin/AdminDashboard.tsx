@@ -3,12 +3,13 @@ import { useNavigate, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard, BookOpen, Newspaper, LogOut, Plus, Edit2, Trash2,
-  Save, X, ChevronDown, ChevronUp, Play, Shield, Eye, Settings, KeyRound, CheckCircle
+  Save, X, ChevronDown, ChevronUp, Play, Shield, Eye, Settings, KeyRound, CheckCircle, MessageSquare, Clock, Loader2
 } from 'lucide-react'
+import axiosInstance from '@api/axiosInstance'
 import { adminAuth, courseStore, newsStore, newsStore as ns, NewsItem, credentialsStore } from '@utils/adminStore'
 import { Course, Lesson } from '@app-types/index'
 
-type Tab = 'overview' | 'courses' | 'news' | 'settings'
+type Tab = 'overview' | 'courses' | 'news' | 'discussions' | 'community' | 'settings'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 function generateId(prefix: string) {
@@ -130,9 +131,9 @@ const CoursesTab: React.FC = () => {
 
   const saveCourse = () => {
     if (modal === 'add-course') {
-      courseStore.add({ ...cf, lessons: [], videoPlaylistId: '' } as Course)
+      courseStore.add({ ...cf, level: cf.level as any, lessons: [], videoPlaylistId: '' } as Course)
     } else if (modal === 'edit-course' && editingCourse) {
-      courseStore.update(editingCourse.id, { ...cf })
+      courseStore.update(editingCourse.id, { ...cf, level: cf.level as any })
     }
     refresh(); setModal(null)
   }
@@ -258,7 +259,7 @@ const CoursesTab: React.FC = () => {
                     YouTube ID kiriting (masalan: vv4y_uOneC0) <b>YOKI</b> kompyuteringizdan video yuklang:
                   </p>
                   <div className="flex items-center">
-                    <input type="file" accept="video/mp4,video/*" onChange={handleFileUpload} disabled={isUploading} 
+                    <input type="file" accept="video/mp4,video/webm" onChange={handleFileUpload} disabled={isUploading} 
                       className="text-xs text-gray-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-cyber-blue/20 file:text-cyber-blue hover:file:bg-cyber-blue/30 transition-all focus:outline-none" 
                     />
                     {isUploading && <span className="text-xs text-yellow-400 animate-pulse ml-2 font-semibold delay-100">Yuklanmoqda...</span>}
@@ -488,6 +489,268 @@ const NewsTab: React.FC = () => {
   )
 }
 
+// ─── Discussions Tab Helpers ──────────────────────────────────────────────────
+const UnreadBadge: React.FC = () => {
+  const [count, setCount] = useState(0)
+
+  useEffect(() => {
+    const fetchCount = async () => {
+      try {
+        const res = await axiosInstance.get('/discussions')
+        if (res.data.success) {
+          const pending = res.data.data.filter((d: any) => !d.isAdminReplied).length
+          setCount(pending)
+        }
+      } catch (err) {}
+    }
+    fetchCount();
+    const inv = setInterval(fetchCount, 30000);
+    return () => clearInterval(inv);
+  }, [])
+
+  if (count === 0) return null
+  return (
+    <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-pulse">
+      {count > 9 ? '9+' : count}
+    </span>
+  )
+}
+
+// ─── Discussions Tab ──────────────────────────────────────────────────────────
+const DiscussionsTab: React.FC = () => {
+  const [discussions, setDiscussions] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [replyText, setReplyText] = useState('')
+  const [replyingTo, setReplyingTo] = useState<string | null>(null)
+  const [filter, setFilter] = useState<'all' | 'pending' | 'answered'>('all')
+
+  const fetchDiscussions = async () => {
+    try {
+      setIsLoading(true)
+      const res = await axiosInstance.get('/discussions')
+      if (res.data.success) setDiscussions(res.data.data)
+    } catch (err) {
+      console.error('Fetch discussions error:', err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchDiscussions()
+  }, [])
+
+  const handleReply = async (id: string, currentAnswer?: string) => {
+    if (!replyText.trim()) return
+    try {
+      const res = await axiosInstance.patch(`/discussions/${id}/reply`, { answer: replyText.trim() })
+      if (res.data.success) {
+        setReplyText('')
+        setReplyingTo(null)
+        fetchDiscussions()
+      }
+    } catch (err) {
+      alert('Javob yuborishda xato yuz berdi')
+    }
+  }
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Haqiqatan ham ushbu savolni o\'chirmoqchimisiz?')) return
+    try {
+      const res = await axiosInstance.delete(`/discussions/${id}`)
+      if (res.data.success) {
+        fetchDiscussions()
+      }
+    } catch (err) {
+      alert('O\'chirishda xato yuz berdi')
+    }
+  }
+
+  const handleClearAnswer = async (id: string) => {
+    if (!window.confirm('Javobni o\'chirmoqchimisiz? (Savolning o\'zi qoladi)')) return
+    try {
+      const res = await axiosInstance.delete(`/discussions/${id}/reply`)
+      if (res.data.success) {
+        fetchDiscussions()
+      }
+    } catch (err) {
+      alert('Javobni o\'chirishda xato yuz berdi')
+    }
+  }
+
+  const startReply = (d: any) => {
+    setReplyingTo(d.id)
+    setReplyText(d.answer || '')
+  }
+
+  const filtered = discussions.filter(d => {
+    if (filter === 'pending') return !d.isAdminReplied
+    if (filter === 'answered') return d.isAdminReplied
+    return true
+  })
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-bold text-white">Savol-javoblar boshqaruvi</h2>
+        <div className="flex gap-2 p-1 bg-cyber-black/40 border border-cyber-blue/20 rounded-lg">
+          {(['all', 'pending', 'answered'] as const).map(f => (
+            <button key={f} onClick={() => setFilter(f)}
+              className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${filter === f ? 'bg-cyber-blue text-white shadow-lg shadow-cyber-blue/20' : 'text-gray-500 hover:text-white'}`}>
+              {f === 'all' ? 'Hammasi' : f === 'pending' ? 'Kutilayotgan' : 'Javob berilgan'}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {isLoading ? (
+        <div className="py-20 text-center"><div className="w-8 h-8 border-2 border-cyber-blue/20 border-t-cyber-blue rounded-full animate-spin mx-auto" /></div>
+      ) : filtered.length === 0 ? (
+        <div className="py-20 text-center text-gray-500 text-sm border border-dashed border-cyber-blue/10 rounded-xl">Savollar topilmadi</div>
+      ) : (
+        <div className="space-y-3">
+          {filtered.map(d => (
+            <div key={d.id} className="bg-cyber-black/40 border border-cyber-blue/20 rounded-xl overflow-hidden group hover:border-cyber-blue/40 transition-all">
+              <div className="p-4">
+                <div className="flex items-start justify-between gap-4 mb-2">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-white font-bold text-sm">{d.userName}</span>
+                      <span className="text-[10px] text-gray-600 font-mono bg-cyber-blue/5 px-1.5 py-0.5 rounded border border-cyber-blue/10">Dars: {d.lessonId}</span>
+                      {!d.isAdminReplied && <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.5)]" />}
+                    </div>
+                    <p className="text-gray-400 text-sm leading-relaxed">{d.question}</p>
+                    <p className="text-[10px] text-gray-600 mt-2 flex items-center gap-1"><Clock size={10} /> {new Date(d.createdAt).toLocaleString('uz-UZ')}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => handleDelete(d.id)}
+                      title="Savolni o'chirish"
+                      className="flex-shrink-0 p-1.5 text-gray-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all border border-transparent hover:border-red-400/30">
+                      <Trash2 size={16} />
+                    </button>
+                    {d.isAdminReplied && (
+                      <button onClick={() => handleClearAnswer(d.id)}
+                        title="Javobni o'chirish"
+                        className="flex-shrink-0 p-1.5 text-gray-500 hover:text-orange-400 hover:bg-orange-400/10 rounded-lg transition-all border border-transparent hover:border-orange-400/30">
+                        <X size={16} />
+                      </button>
+                    )}
+                    <button onClick={() => replyingTo === d.id ? setReplyingTo(null) : startReply(d)}
+                      className={`flex-shrink-0 px-3 py-1.5 text-xs font-bold rounded-lg transition-all border ${d.isAdminReplied ? 'text-gray-400 border-gray-500/30 hover:bg-white/5' : 'bg-cyber-blue text-white border-cyber-blue/50 hover:bg-blue-500 shadow-lg shadow-cyber-blue/20'}`}>
+                      {d.isAdminReplied ? 'Tahrirlash' : 'Javob berish'}
+                    </button>
+                  </div>
+                </div>
+
+                {d.isAdminReplied && replyingTo !== d.id && (
+                  <div className="mt-3 pl-3 border-l-2 border-green-500/50 bg-green-500/5 p-3 rounded-r-lg">
+                    <p className="text-[10px] text-green-400 font-bold mb-1 flex items-center gap-1 uppercase tracking-tighter"><Shield size={10} /> Javobingiz:</p>
+                    <p className="text-xs text-gray-400 italic">"{d.answer}"</p>
+                  </div>
+                )}
+
+                <AnimatePresence>
+                  {replyingTo === d.id && (
+                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="mt-4 pt-4 border-t border-cyber-blue/10">
+                      <textarea
+                        autoFocus
+                        value={replyText}
+                        onChange={e => setReplyText(e.target.value)}
+                        placeholder="Javobingizni shu yerga yozing..."
+                        className="w-full bg-cyber-black/80 border border-cyber-blue/30 text-white rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-cyber-blue transition-colors h-24 resize-none placeholder-gray-600"
+                      />
+                      <div className="flex justify-end gap-2 mt-2">
+                        <button onClick={() => setReplyingTo(null)} className="px-3 py-1.5 text-xs text-gray-500 hover:text-white">Bekor</button>
+                        <button onClick={() => handleReply(d.id)} disabled={!replyText.trim() || replyText.trim() === d.answer}
+                          className="px-5 py-1.5 bg-cyber-blue text-white text-xs font-bold rounded-lg hover:bg-blue-500 disabled:opacity-50 transition-all">
+                          Saqlash
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── Community Tab ────────────────────────────────────────────────────────────
+const CommunityTab: React.FC = () => {
+  const [messages, setMessages] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  const fetchMessages = async () => {
+    try {
+      const res = await axiosInstance.get('/community/messages')
+      if (res.data.success && Array.isArray(res.data.data)) {
+        setMessages(res.data.data)
+      } else {
+        setMessages([])
+      }
+    } catch (err) {
+      console.error('Fetch messages error:', err)
+      setMessages([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => { fetchMessages() }, [])
+
+  const deleteMsg = async (id: string) => {
+    if (!window.confirm('Xabarni o\'chirmoqchimisiz?')) return
+    try {
+      await axiosInstance.delete(`/community/messages/${id}`)
+      setMessages(messages.filter(m => m.id !== id))
+    } catch (err) { alert('Xatolik!') }
+  }
+
+  return (
+    <div className="space-y-4">
+      <h2 className="text-lg font-bold text-white">Jamoatchilik chati boshqaruvi</h2>
+      {loading ? (
+        <div className="py-20 text-center"><Loader2 className="animate-spin text-cyber-blue mx-auto" /></div>
+      ) : (
+        <div className="bg-cyber-black/40 border border-cyber-blue/20 rounded-xl overflow-hidden">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-cyber-blue/10 text-gray-400 text-[10px] uppercase tracking-wider">
+              <tr>
+                <th className="px-4 py-3">Foydalanuvchi</th>
+                <th className="px-4 py-3">Xabar</th>
+                <th className="px-4 py-3">Vaqt</th>
+                <th className="px-4 py-3 text-right">Amallar</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-cyber-blue/10">
+              {messages.map(m => (
+                <tr key={m.id} className="hover:bg-white/5 transition-colors">
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-white font-semibold">{m.user.username}</span>
+                      <span className="text-[10px] text-gray-600">({m.user.role})</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-gray-300 max-w-xs truncate">{m.content}</td>
+                  <td className="px-4 py-3 text-gray-500 text-xs">{new Date(m.createdAt).toLocaleString()}</td>
+                  <td className="px-4 py-3 text-right">
+                    <button onClick={() => deleteMsg(m.id)} className="p-2 text-gray-500 hover:text-red-400">
+                      <Trash2 size={16} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ─── Main Dashboard ───────────────────────────────────────────────────────────
 export const AdminDashboard: React.FC = () => {
   const navigate = useNavigate()
@@ -511,6 +774,8 @@ export const AdminDashboard: React.FC = () => {
     { id: 'overview', label: 'Umumiy', icon: <LayoutDashboard size={16} /> },
     { id: 'courses', label: 'Kurslar', icon: <BookOpen size={16} /> },
     { id: 'news', label: 'Yangiliklar', icon: <Newspaper size={16} /> },
+    { id: 'discussions', label: 'Savollar', icon: <MessageSquare size={16} />, badge: true },
+    { id: 'community', label: 'Chat', icon: <MessageSquare size={16} /> },
     { id: 'settings', label: 'Sozlamalar', icon: <Settings size={16} /> },
   ] as const
 
@@ -540,12 +805,18 @@ export const AdminDashboard: React.FC = () => {
         </div>
         {/* Tabs */}
         <div className="max-w-7xl mx-auto px-4 flex gap-1 pb-1">
-          {tabs.map(t => (
-            <button key={t.id} onClick={() => setTab(t.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${tab === t.id ? 'bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/30' : 'text-gray-500 hover:text-white hover:bg-white/5'}`}>
-              {t.icon} {t.label}
-            </button>
-          ))}
+          {tabs.map(t => {
+            const pendingCount = t.id === 'discussions' ? 0 : 0; // Hozircha statik, pastda yangilaymiz
+            return (
+              <button key={t.id} onClick={() => setTab(t.id)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all relative ${tab === t.id ? 'bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/30' : 'text-gray-500 hover:text-white hover:bg-white/5'}`}>
+                {t.icon} {t.label}
+                {t.id === 'discussions' && (
+                  <UnreadBadge />
+                )}
+              </button>
+            )
+          })}
         </div>
       </div>
 
@@ -599,6 +870,8 @@ export const AdminDashboard: React.FC = () => {
 
         {tab === 'courses' && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}><CoursesTab /></motion.div>}
         {tab === 'news' && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}><NewsTab /></motion.div>}
+        {tab === 'discussions' && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}><DiscussionsTab /></motion.div>}
+        {tab === 'community' && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}><CommunityTab /></motion.div>}
         {tab === 'settings' && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}><SettingsTab /></motion.div>}
       </div>
     </div>

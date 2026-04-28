@@ -45,7 +45,10 @@ export class UserRepository {
     lastName?: string;
     googleId?: string;
     googleEmail?: string;
+    phone?: string;
     role?: string;
+    verificationCode?: string;
+    verificationCodeExpires?: Date;
   }) {
     return prisma.user.create({
       data: {
